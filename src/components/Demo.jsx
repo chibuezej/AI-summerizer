@@ -27,25 +27,30 @@ const Demo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const existingArticle = allArticles.find(
-      (item) => item.url === article.url
-    );
-
+  
+    const existingArticle = allArticles.find((item) => item.url === article.url);
+  
     if (existingArticle) return setArticle(existingArticle);
-
-    const { data } = await getSummary({ articleUrl: article.url });
-    console.log(data, 'line 38');
-    if (data?.summary) {
-      const newArticle = { ...article, summary: data.summary };
-      const updatedAllArticles = [newArticle, ...allArticles];
-
-      // update state and local storage
-      setArticle(newArticle);
-      setAllArticles(updatedAllArticles);
-      localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
+  
+    try {
+      const { data } = await getSummary({ articleUrl: article.url });
+      console.log(data, 'line 38');
+  
+      if (data?.summary) {
+        const newArticle = { ...article, summary: data.summary };
+        const updatedAllArticles = [newArticle, ...allArticles];
+  
+        // update state and local storage
+        setArticle(newArticle);
+        setAllArticles(updatedAllArticles);
+        localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
+      }
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+      // Handle the error, display a message, or take appropriate action
     }
   };
+  
 
   // copy the url and toggle the icon for user feedback
   const handleCopy = (copyUrl) => {
